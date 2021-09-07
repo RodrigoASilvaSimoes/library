@@ -1,0 +1,88 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.8.16'
+    id 'idea'
+}
+
+archivesBaseName = 'BFT-SMaRt'
+group 'org.example'
+
+jar{
+    destinationDirectory = file("$rootDir/bin")
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
+}
+sourceSets {
+    main {
+        proto {
+            // In addition to the default 'src/main/proto'
+            srcDirs = ['src/bftsmart/proto']
+        }
+        java {
+            srcDirs 'src'
+        }
+    }
+    test {
+        proto {
+            srcDirs = ['src/bftsmart/proto']
+        }
+    }
+}
+
+def grpcVersion = '1.28.1'
+def nettyTcNativeVersion = '2.0.40.Final'
+
+dependencies {
+    implementation 'com.google.protobuf:protobuf-java:3.15.3'
+    implementation "com.google.api.grpc:proto-google-common-protos:0.1.9"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.netty:netty-tcnative-boringssl-static:${nettyTcNativeVersion}"
+    implementation "org.bouncycastle:bcmail-jdk15:1.46"
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+
+    // Local
+    implementation name: "slf4j-api-1.7.25"
+    implementation name: "bcpkix-jdk15on-160"
+    implementation name: "bcprov-jdk15on-160"
+    implementation name: "commons-codec-1.11"
+    implementation name: "core-0.1.4"
+    implementation name: "logback-classic-1.2.3"
+    implementation name: "logback-core-1.2.3"
+    implementation name: "netty-all-4.1.34.Final"
+
+    testImplementation 'junit:junit:4.12'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.7.1"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.22.1'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
